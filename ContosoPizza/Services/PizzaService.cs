@@ -1,46 +1,45 @@
-﻿using ContosoPizza.Data;
-using ContosoPizza.Models;
+﻿using ContosoPizza.Models;
 
-namespace ContosoPizza.Services
+namespace ContosoPizza.Services;
+
+public  class PizzaService
 {
-    public class PizzaService
+    static List<Pizza> Pizzas { get; }
+    static int nextId = 3;
+    static PizzaService()
     {
-        private readonly PizzaContext _context = default!;
+        Pizzas = new List<Pizza>
+        {
+            new Pizza { Id = 1, Name = "Classic Italian", IsGlutenFree = false },
+            new Pizza { Id = 2, Name = "Veggie", IsGlutenFree = true }
+        };
+    }
 
-        public PizzaService(PizzaContext context) 
-        {
-            _context = context;
-        }
-        
-        public IList<Pizza> GetPizzas()
-        {
-            if(_context.Pizzas != null)
-            {
-                return _context.Pizzas.ToList();
-            }
-            return new List<Pizza>();
-        }
+    public  List<Pizza> GetAll() => Pizzas;
 
-        public void AddPizza(Pizza pizza)
-        {
-            if (_context.Pizzas != null)
-            {
-                _context.Pizzas.Add(pizza);
-                _context.SaveChanges();
-            }
-        }
+    public static Pizza? Get(int id) => Pizzas.FirstOrDefault(p => p.Id == id);
 
-        public void DeletePizza(int id)
-        {
-            if (_context.Pizzas != null)
-            {
-                var pizza = _context.Pizzas.Find(id);
-                if (pizza != null)
-                {
-                    _context.Pizzas.Remove(pizza);
-                    _context.SaveChanges();
-                }
-            }            
-        } 
+    public void AddPizza(Pizza pizza)
+    {
+        pizza.Id = Pizzas.Count > 0 ? Pizzas.Max(p => p.Id) + 1 : 1; // Assign a new unique ID
+        Pizzas.Add(pizza); // Add the pizza to the list
+    }
+
+    public void DeletePizza(int id)
+    {
+        var pizza = Get(id);
+        if(pizza is null)
+            return;
+
+        Pizzas.Remove(pizza);
+    }
+
+    public void Update(Pizza pizza)
+    {
+        var index = Pizzas.FindIndex(p => p.Id == pizza.Id);
+        if(index == -1)
+            return;
+
+        Pizzas[index] = pizza;
     }
 }

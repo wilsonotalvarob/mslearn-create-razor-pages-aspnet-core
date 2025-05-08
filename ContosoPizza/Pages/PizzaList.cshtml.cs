@@ -19,9 +19,10 @@ namespace ContosoPizza.Pages
 
         public void OnGet()
         {
-            PizzaList = _service.GetPizzas();
+            PizzaList = _service.GetAll();
         }
         [BindProperty]
+        
         public Pizza NewPizza { get; set; } = default!;
         public IActionResult OnPost()
         {
@@ -35,11 +36,12 @@ namespace ContosoPizza.Pages
             return RedirectToAction("Get");
         }
         public IActionResult OnPostDelete(int id)
-{
-    _service.DeletePizza(id);
+        {
+            _service.DeletePizza(id);
 
-    return RedirectToAction("Get");
-}
+            return RedirectToAction("Get");
+        }
+
     }
-    
+
 }
